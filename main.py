@@ -7,6 +7,7 @@ import os, shutil, uuid, subprocess
 ###################
 # CONFIG
 
+HOSTED_URL = 'https://hls.nnisarg.in'
 UPLOAD_FOLDER = 'videos'
 OUTPUT_FOLDER = 'outputs'
 ZIPS_FOLDER = 'zips'
@@ -110,7 +111,7 @@ def upload_file(video: UploadFile = File(...)):
 
 @app.get("/sitemap.xml", response_class=PlainTextResponse)
 def generate_sitemap():
-    base_url = "http://example.com"
+    base_url = HOSTED_URL
     routes = app.routes
     sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
     for route in routes:
