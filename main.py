@@ -84,7 +84,7 @@ def cleanup(video: str, id: str):
 ###################
 # ROUTES
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/", include_in_schema=False, response_class=HTMLResponse)
 def index(request: Request):
     return templates.TemplateResponse('index.html', {'request': request})
 
@@ -109,7 +109,7 @@ def upload_file(video: UploadFile = File(...)):
 ###################
 # SEO
 
-@app.get("/sitemap.xml", response_class=PlainTextResponse)
+@app.get("/sitemap.xml", include_in_schema=False, response_class=PlainTextResponse)
 def generate_sitemap():
     base_url = HOSTED_URL
     routes = app.routes
@@ -120,7 +120,7 @@ def generate_sitemap():
     sitemap += "</urlset>"
     return PlainTextResponse(content=sitemap)
 
-@app.get("/robots.txt", response_class=PlainTextResponse)
+@app.get("/robots.txt", include_in_schema=False, response_class=PlainTextResponse)
 def get_robots_txt():
     robots_txt = "User-agent: *\nDisallow: /docs\nDisallow: /redoc\n"
     return PlainTextResponse(content=robots_txt)
