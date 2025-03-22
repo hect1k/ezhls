@@ -1,0 +1,13 @@
+services:
+  app:
+    build: .
+    container_name: ezhls
+    ports:
+      - "8000:5000"
+    volumes:
+      - ./videos:/app/videos
+      - ./outputs:/app/outputs
+      - ./zips:/app/zips
+    environment:
+      - HOSTED_URL=https://hls.nnisarg.in
+    restart: unless-stopped
