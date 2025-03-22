@@ -1,5 +1,7 @@
 import asyncio
 from email.message import EmailMessage
+import random
+import string
 import os
 import shutil
 import smtplib
@@ -134,9 +136,9 @@ def generate_hls(filepath: str) -> str:
         raise HTTPException(status_code=500, detail=str(e))
     return id
 
-def zip_folder(id: str):
+def zip_folder(id: str, zip_id: str):
     try:
-        zip_path = os.path.join(ZIPS_FOLDER, f"{id}.zip")
+        zip_path = os.path.join(ZIPS_FOLDER, f"{zip_id}.zip")
         folder_path = os.path.join(OUTPUT_FOLDER, id)
 
         with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
@@ -155,15 +157,16 @@ def cleanup(video: str, id: str):
 def process_video(video_path: str, email: str, unique_filename: str):
     folder_id = ""
     error = ""
+    zip_id = unique_filename.split('.')[0]
 
     try:
         folder_id = generate_hls(video_path)
-        zip_folder(folder_id)
+        zip_folder(folder_id, zip_id)
     except Exception as e:
         error = f"Video processing failed: {str(e)}"
         print(f"[ERROR] - {error}")
 
-    download_link = f"{HOSTED_URL}/download/{folder_id}"
+    download_link = f"{HOSTED_URL}/download/{zip_id}"
 
     if error:
         email_body = f"""
@@ -208,7 +211,10 @@ async def upload_file(
     if not video or not video.filename or not allowed_file(video.filename):
         raise HTTPException(status_code=400, detail="Unsupported file format")
 
-    unique_filename = f"{uuid.uuid4()}.{video.filename.rsplit('.', 1)[1]}"
+    random_part = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
+    timestamp = int(time.time())
+    ext = video.filename.rsplit('.', 1)[-1]
+    unique_filename = f"{random_part}{timestamp % 10000}.{ext}"
     file_path = os.path.join(UPLOAD_FOLDER, unique_filename)
 
     await save_uploaded_file(video, file_path)
@@ -216,14 +222,14 @@ async def upload_file(
     background_tasks.add_task(process_video, file_path, email, unique_filename)
 
     if "html" in str(request.headers.get("Accept", "")):
-        return templates.TemplateResponse("processing.html", {"request": request})
-    
+        return templates.TemplateResponse("processing.html", { "request": request })
     else:
         return {"message": "Processing started. You'll receive an email when done."}
 
 @app.get("/download/{zip_id}")
 async def download_zip(zip_id: str):
     zip_path = os.path.join(ZIPS_FOLDER, f"{zip_id}.zip")
+    print(zip_path)
     if os.path.exists(zip_path):
         return FileResponse(zip_path, filename=f"{zip_id}.zip", media_type="application/zip")
     raise HTTPException(status_code=404, detail="File not found or expired")
