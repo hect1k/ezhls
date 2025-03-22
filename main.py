@@ -200,6 +200,7 @@ def index(request: Request):
 
 @app.post("/upload")
 async def upload_file(
+    request: Request,
     video: UploadFile = File(...),
     email: str = Form(...),
     background_tasks: BackgroundTasks = BackgroundTasks()
@@ -214,7 +215,11 @@ async def upload_file(
 
     background_tasks.add_task(process_video, file_path, email, unique_filename)
 
-    return {"message": "Processing started. You'll receive an email when done."}
+    if "html" in str(request.headers.get("Accept", "")):
+        return templates.TemplateResponse("processing.html", {"request": request})
+    
+    else:
+        return {"message": "Processing started. You'll receive an email when done."}
 
 @app.get("/download/{zip_id}")
 async def download_zip(zip_id: str):
