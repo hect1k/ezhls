@@ -42,6 +42,25 @@
       background-color: #eee;
       cursor: pointer;
     }
+
+    .loading-spinner {
+      width: 20px;
+      height: 20px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
   </style>
 </head>
 
@@ -60,20 +79,17 @@
 
   <main class="w-full max-w-md mx-auto min-h-[calc(100vh-9rem)] flex flex-col justify-center items-center p-4 gap-6">
     <h1 class="text-3xl font-bold">HLS Stream Generator</h1>
-    <form method="POST" action="/upload" enctype="multipart/form-data" class="w-full flex flex-col gap-4">
+    <form id="uploadForm" method="POST" action="/upload" enctype="multipart/form-data"
+      class="w-full flex flex-col gap-4">
       <div class="input_container">
         <input type="file" name="video" accept="video/*" required />
       </div>
 
-      <label for="resolution" class="text-sm text-gray-400">Select Resolution:</label>
-      <select name="resolution" id="resolution" class="p-2 bg-neutral-800 text-white rounded">
-        <option value="360p">360p</option>
-        <option value="480p">480p</option>
-        <option value="720p" selected>720p</option>
-        <option value="1080p">1080p</option>
-      </select>
+      <label for="email" class="text-sm text-gray-400">Enter Your Email:</label>
+      <input type="email" id="email" name="email" placeholder="email@example.com"
+        class="p-2 bg-neutral-800 text-white rounded" required />
 
-      <button class="bg-rose-500 hover:bg-rose-700 text-white font-bold py-2 px-4 rounded" type="submit">
+      <button id="submitBtn" class="bg-rose-500 hover:bg-rose-700 text-white font-bold py-2 px-4 rounded" type="submit">
         Generate HLS Stream
       </button>
     </form>
@@ -86,27 +102,6 @@
         class="underline underline-offset-4 text-rose-400">Nnisarg Gada</a>
     </p>
   </footer>
-
-  <script>
-    const form = document.querySelector('form');
-    const submitButton = document.querySelector('button[type="submit"]');
-    const input = document.querySelector('input[type="file"]');
-
-    if (form && submitButton && input) {
-      submitButton.addEventListener('click', (e) => {
-        if (!input.value) {
-          e.preventDefault();
-          input.click();
-        }
-        else {
-          submitButton.innerText = 'Generating...';
-          submitButton.disabled = true;
-          submitButton.classList = "bg-neutral-500 cursor-not-allowed text-white font-bold py-2 px-4 rounded"
-          form.submit();
-        }
-      });
-    }
-  </script>
 </body>
 
 </html>
