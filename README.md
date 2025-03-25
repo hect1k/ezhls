@@ -2,6 +2,8 @@
 
 EzHLS is a FastAPI-based web application that converts video files into **HLS (HTTP Live Streaming) format**. It allows users to upload a video, provide an email address, and generate an HLS stream along with a downloadable ZIP file.
 
+![EzHLS banner](https://nnisarg.in/images/projects/ezhls.jpg)
+
 ## Features
 
 - **Supports multiple video formats**: `.mp4`, `.avi`, `.mov`
